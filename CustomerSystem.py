@@ -3,6 +3,7 @@
 # created yourself
 
 # More packages may be imported in the space below if approved by your instructor
+import csv
 
 def printMenu():
     print('''
@@ -22,21 +23,38 @@ def printMenu():
     This function may also be broken down further depending on your algorithm/approach
 '''
 def enterCustomerInfo():
-    '''Sets the variables for postal code and credit card'''
+    '''
+        Gets the input for the information the user enters
+    '''
     firstName = str(input("Input first name: "))
     lastName = str(input("Input last name: "))
     city = str(input("Input your city: "))
     postalCode = str(input("Input your postal code: "))
+    if validatePostalCode(postalCode) == False:
+        print("Invalid postal code")
+        return False
     creditCard = str(input("Input your credit card:"))
-    return firstName, lastName, city, postalCode, creditCard
+    if validateCreditCard(creditCard) == False:
+        print("Invalid credit card")
+        return False
 '''
     This function is to be edited to achieve the task.
     It is your decision to make this function a procedural or functional type
     You may place as many or as few parameters as needed
     This function may also be broken down further depending on your algorithm/approach
 '''
-def validatePostalCode():
-    pass    # Remove this pass statement and add your own code below
+def validatePostalCode(postalCode):
+    '''
+        Validates the inputted postal code. Parses through the .csv file, 
+        looking at the first 3 characters of every row and checking it against
+        the inputted postal code
+    '''
+    with open("postal_codes.csv", "r") as csv_file:
+        reader = csv.reader(csv_file, delimiter ="|")
+        for row in reader:
+            if postalCode == row[0]:
+                return True
+    return False
 
 '''
     This function is to be edited to achieve the task.
@@ -75,7 +93,6 @@ generateCustomerOption = "2"
 exitCondition = "9"
 
 # More variables for the main may be declared in the space below
-database = ""
 
 while userInput != exitCondition:
     printMenu()                 # Printing out the main menu
@@ -84,7 +101,9 @@ while userInput != exitCondition:
     if userInput == enterCustomerOption:
         # Only the line below may be editted based on the parameter list and how you design the method return
         # Any necessary variables may be added to this if section, but nowhere else in the code
-        enterCustomerInfo()
+        if enterCustomerInfo() == False:
+            continue
+
 
     elif userInput == generateCustomerOption: 
         # Only the line below may be editted based on the parameter list and how you design the method return
