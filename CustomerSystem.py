@@ -23,6 +23,7 @@ def printMenu():
 '''
 def enterCustomerInfo():
     '''Sets the variables for postal code and credit card'''
+    global postalCode, creditCard
     firstName = str(input("Input first name: "))
     lastName = str(input("Input last name: "))
     city = str(input("Input your city: "))
