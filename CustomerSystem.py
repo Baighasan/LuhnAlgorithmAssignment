@@ -23,12 +23,12 @@ def printMenu():
 '''
 def enterCustomerInfo():
     '''Sets the variables for postal code and credit card'''
-    global postalCode, creditCard
     firstName = str(input("Input first name: "))
     lastName = str(input("Input last name: "))
     city = str(input("Input your city: "))
     postalCode = str(input("Input your postal code: "))
     creditCard = str(input("Input your credit card:"))
+    return firstName, lastName, city, postalCode, creditCard
 '''
     This function is to be edited to achieve the task.
     It is your decision to make this function a procedural or functional type
