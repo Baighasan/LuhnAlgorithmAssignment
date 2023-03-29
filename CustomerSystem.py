@@ -4,6 +4,7 @@
 
 # More packages may be imported in the space below if approved by your instructor
 import csv
+import subprocess
 
 def printMenu():
     print('''
@@ -18,17 +19,31 @@ def printMenu():
 
 def enterCustomerInfo():
     '''Gets the input for the information the user enters'''
+    global id
+    # Creates a hidden txt file to store the user inputes
+    hiddenDatabase = open("hiddenDatabase.txt", "a")
+    # Hides the file from the user in file explorer using the subprocess library, executes only under certain conditions
+    if id == 0:
+        subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
+    
+    # General Customer info 
     firstName = str(input("\nInput first name: "))
     lastName = str(input("\nInput last name: "))
     city = str(input("\nInput your city: "))
+    
+    # Validates postal code
     postalCode = str(input("\nInput your postal code: "))
-    if validatePostalCode(postalCode) == False:
-        print("Invalid postal code")
-        return False
+    while (len(postalCode) != 3) or (validatePostalCode(postalCode) == False):
+        postalCode = input("\nInvalid postal code. Pease re-enter: ")
+    
+    # Validates credit card
     creditCard = str(input("\nInput your credit card: "))
-    if validateCreditCard(creditCard) == False:
-        print("Invalid credit card")
-        return False
+    while (len(creditCard) < 9) or (validateCreditCard(creditCard) == False):
+        creditCard = input("\nInvalid credit card. Please re-enter: ")
+    
+    id += 1
+    hiddenDatabase.writelines(f"{id}, {firstName}, {lastName}, {city}, {postalCode}, {creditCard}\n")
+    hiddenDatabase.close()
 
 def validatePostalCode(postalCode):
     '''
@@ -101,6 +116,7 @@ generateCustomerOption = "2"
 exitCondition = "9"
 
 # More variables for the main may be declared in the space below
+id = 0
 
 while userInput != exitCondition:
     printMenu()                 # Printing out the main menu
@@ -109,8 +125,7 @@ while userInput != exitCondition:
     if userInput == enterCustomerOption:
         # Only the line below may be editted based on the parameter list and how you design the method return
         # Any necessary variables may be added to this if section, but nowhere else in the code
-        if enterCustomerInfo() == False:
-            continue
+        enterCustomerInfo()
 
 
     elif userInput == generateCustomerOption: 
