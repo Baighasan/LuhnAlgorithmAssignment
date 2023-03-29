@@ -16,33 +16,20 @@ def printMenu():
             Enter menu option (1-9)
         ''')
 
-'''
-    This function is to be edited to achieve the task.
-    It is your decision to make this function a procedural or functional type
-    You may place as many or as few parameters as needed
-    This function may also be broken down further depending on your algorithm/approach
-'''
 def enterCustomerInfo():
-    '''
-        Gets the input for the information the user enters
-    '''
-    firstName = str(input("Input first name: "))
-    lastName = str(input("Input last name: "))
-    city = str(input("Input your city: "))
-    postalCode = str(input("Input your postal code: "))
+    '''Gets the input for the information the user enters'''
+    firstName = str(input("\nInput first name: "))
+    lastName = str(input("\nInput last name: "))
+    city = str(input("\nInput your city: "))
+    postalCode = str(input("\nInput your postal code: "))
     if validatePostalCode(postalCode) == False:
         print("Invalid postal code")
         return False
-    creditCard = str(input("Input your credit card:"))
+    creditCard = str(input("\nInput your credit card: "))
     if validateCreditCard(creditCard) == False:
         print("Invalid credit card")
         return False
-'''
-    This function is to be edited to achieve the task.
-    It is your decision to make this function a procedural or functional type
-    You may place as many or as few parameters as needed
-    This function may also be broken down further depending on your algorithm/approach
-'''
+
 def validatePostalCode(postalCode):
     '''
         Validates the inputted postal code. Parses through the .csv file, 
@@ -53,24 +40,45 @@ def validatePostalCode(postalCode):
         reader = csv.reader(csv_file, delimiter ="|")
         for row in reader:
             if postalCode == row[0]:
+                csv_file.close()
                 return True
+    csv_file.close()
     return False
 
-'''
-    This function is to be edited to achieve the task.
-    It is your decision to make this function a procedural or functional type
-    You may place as many or as few parameters as needed
-    This function may also be broken down further depending on your algorithm/approach
-'''
-def validateCreditCard():
-    pass    # Remove this pass statement and add your own code below
+def validateCreditCard(creditCard):
+    '''Validates the credit card using the lunh algorithm'''
+    if len(creditCard) < 9:
+        print("Invalid credit card")
+        return False
+    ############## ASK MR HO IF YOU CAN USE THIS FUNCTION
+    elif creditCard.isnumeric() == False:
+        print("Invalid credit card")
+        return False
+    # Sets variables needed for the algorithm
+    sum1 = 0
+    sum2 = 0
+    sumTotal = 0
+    # Reverse the credit card
+    reverseCreditCard = creditCard[::-1]
+    # Parses through the reversed credit card number
+    for i in range(1, len(reverseCreditCard)+1):
+        if i % 2 == 1:
+            sum1 = sum1 + int(reverseCreditCard[i-1])
+        else:
+            evenDigit = int(reverseCreditCard[i-1]) * 2
+            if evenDigit > 9:
+                evenDigit = str(evenDigit)
+                for x in evenDigit:
+                    x = int(x)
+                    sum2 = sum2 + x
+            else:
+                sum2 = sum2 + evenDigit
+    sumTotal = sum1 + sum2
+    sumTotal = str(sumTotal)
+    if sumTotal[-1] == "0":
+        return True
+    return False
 
-'''
-    This function is to be edited to achieve the task.
-    It is your decision to make this function a procedural or functional type
-    You may place as many or as few parameters as needed
-    This function may also be broken down further depending on your algorithm/approach
-'''
 def generateCustomerDataFile():
     pass    # Remove this pass statement and add your own code below
 
