@@ -127,6 +127,10 @@ def generateCustomerDataFile():
     hiddenDatabase = open("hiddenDatabase.txt", "r")
     for line in hiddenDatabase:
         customerInfoFile.write(line)
+    
+    # This resets the hidden database for then next set of inputs
+    hiddenDatabase.close()
+    customerInfoFile.close()
 
 ####################################################################
 #       ADDITIONAL METHODS MAY BE ADDED BELOW IF NECESSARY         #
