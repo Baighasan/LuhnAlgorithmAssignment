@@ -8,6 +8,7 @@ import subprocess
 import os
 
 def printMenu():
+    '''Displays the menu for selecting options'''
     print('''
             Customer and Sales System\n
             1. Enter Customer Information\n
@@ -19,7 +20,12 @@ def printMenu():
         ''')
 
 def enterCustomerInfo():
-    '''Gets the input for the information the user enters'''
+    '''
+        Gets the input for the information the user enters, as well as validating
+        both the postal code and the credit card. Once everything passes, it will tick the id up one.
+        This function will create a hidden database in the folder where it will append the inputted information
+        to. 
+    '''
     global id
     # Creates a hidden txt file to store the user inputes
     hiddenDatabase = open("hiddenDatabase.txt", "a")
@@ -69,7 +75,7 @@ def validateCreditCard(creditCard):
     if len(creditCard) < 9:
         print("Invalid credit card")
         return False
-    ############## ASK MR HO IF YOU CAN USE THIS FUNCTION
+    # Checks if string inputted is all numbers
     elif creditCard.isnumeric() == False:
         print("Invalid credit card")
         return False
@@ -82,8 +88,12 @@ def validateCreditCard(creditCard):
     # Parses through the reversed credit card number
     for i in range(1, len(reverseCreditCard)+1):
         if i % 2 == 1:
+            # If digit is odd, it is added to sum1
             sum1 = sum1 + int(reverseCreditCard[i-1])
         else:
+            # If digit is even, then number of the digit will be multiplied by two
+            # If that number is greator then nine, then it takes the sum of the two digits,
+            # then adds them to sum2
             evenDigit = int(reverseCreditCard[i-1]) * 2
             if evenDigit > 9:
                 evenDigit = str(evenDigit)
@@ -92,17 +102,26 @@ def validateCreditCard(creditCard):
                     sum2 = sum2 + x
             else:
                 sum2 = sum2 + evenDigit
+    # Total sum is sum1 and sum2 added together
     sumTotal = sum1 + sum2
     sumTotal = str(sumTotal)
+    # If the total sum is a multiple of 10, then return True. If not, return False
     if sumTotal[-1] == "0":
         return True
     return False
 
 def generateCustomerDataFile():
+    '''
+        Generates the customer data file and appends the inputted data that was stored in the hidden database.
+        The hidden database's data is then wiped so that the next series of inputs can have a reset id.
+    '''
+    global id
+    
     try:
         hiddenDatabase = open("hiddenDatabase.txt")
     except IOError:
         print("\nYou have not inputted any customer data.")
+        hiddenDatabase.close()
         return False
     hiddenDatabase.close()
     
@@ -129,6 +148,12 @@ def generateCustomerDataFile():
         customerInfoFile.write(line)
     
     # This resets the hidden database for then next set of inputs
+    id = 0
+    # File must be set to visible in order to open in write mode
+    subprocess.check_call(["attrib","+V","hiddenDatabase.txt"])
+    hiddenDatabase = open("hiddenDatabase.txt", "w")
+    # Resets the file to hidden
+    subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
     hiddenDatabase.close()
     customerInfoFile.close()
 
