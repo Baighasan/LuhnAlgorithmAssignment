@@ -5,6 +5,7 @@
 # More packages may be imported in the space below if approved by your instructor
 import csv
 import subprocess
+import os
 
 def printMenu():
     print('''
@@ -41,9 +42,12 @@ def enterCustomerInfo():
     while (len(creditCard) < 9) or (validateCreditCard(creditCard) == False):
         creditCard = input("\nInvalid credit card. Please re-enter: ")
     
+    # Appends the data to a hidden database to store it for later use when we need to generate the csv file
     id += 1
-    hiddenDatabase.writelines(f"{id}, {firstName}, {lastName}, {city}, {postalCode}, {creditCard}\n")
+    hiddenDatabase.writelines(f"{id}|{firstName}|{lastName}|{city}|{postalCode}|{creditCard}\n")
     hiddenDatabase.close()
+    
+    print("\nSuccessfully inputted customer data\n")
 
 def validatePostalCode(postalCode):
     '''
@@ -95,7 +99,34 @@ def validateCreditCard(creditCard):
     return False
 
 def generateCustomerDataFile():
-    pass    # Remove this pass statement and add your own code below
+    try:
+        hiddenDatabase = open("hiddenDatabase.txt")
+    except IOError:
+        print("\nYou have not inputted any customer data.")
+        return False
+    hiddenDatabase.close()
+    
+    ####### FIX ERROR WHERE USER ENTERS BLANK NAME
+    fileName = input("\nInput a name for your generated csv file. Try not to put any spaces. Do not end your file with .csv: ")
+    filePath = input("\nInput the file path where you want the csv file to be generated. \nIf you are on a windows, seperate your path with \\. If you are on a mac, seperate your path with /. \nMake sure to end your file path with your correct slash. \nLeave blank to generate in current folder: ")
+    
+    if filePath == "":
+        filePath = os.getcwd() + "\\" + fileName + ".csv"
+    
+    else:
+        filePath = filePath + fileName + ".csv"
+    
+    try: 
+        customerInfoFile = open(filePath, "a")
+    except FileNotFoundError: 
+        print("\nInvalid file path. Try again.")
+    
+    # Appends the header row
+    customerInfoFile.write("id|First Name|Last Name|City|Postal Code|Credit Card\n")
+    
+    hiddenDatabase = open("hiddenDatabase.txt", "r")
+    for line in hiddenDatabase:
+        customerInfoFile.write(line)
 
 ####################################################################
 #       ADDITIONAL METHODS MAY BE ADDED BELOW IF NECESSARY         #
