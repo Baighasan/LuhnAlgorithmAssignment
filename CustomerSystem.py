@@ -19,18 +19,19 @@ def printMenu():
             Enter menu option (1-9)
         ''')
 
-def enterCustomerInfo():
+def enterCustomerInfo(usrid):
     '''
         Gets the input for the information the user enters, as well as validating
         both the postal code and the credit card. Once everything passes, it will tick the id up one.
         This function will create a hidden database in the folder where it will append the inputted information
         to. 
     '''
-    global id
-    # Creates a hidden txt file to store the user inputes
+    
+    # Opens hidden database in append mode
     hiddenDatabase = open("hiddenDatabase.txt", "a")
-    # Hides the file from the user in file explorer using the subprocess library, executes only under certain conditions
-    if id == 0:
+    
+    # If this is the first input, it will reset the database if there is data and hide it
+    if usrid == 0:
         subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
     
     # General Customer info 
@@ -49,8 +50,8 @@ def enterCustomerInfo():
         creditCard = input("\nInvalid credit card. Please re-enter: ")
     
     # Appends the data to a hidden database to store it for later use when we need to generate the csv file
-    id += 1
-    hiddenDatabase.writelines(f"{id}|{firstName}|{lastName}|{city}|{postalCode}|{creditCard}\n")
+    usrid += 1
+    hiddenDatabase.writelines(f"{usrid}|{firstName}|{lastName}|{city}|{postalCode}|{creditCard}\n")
     hiddenDatabase.close()
     
     print("\nSuccessfully inputted customer data\n")
@@ -115,7 +116,6 @@ def generateCustomerDataFile():
         Generates the customer data file and appends the inputted data that was stored in the hidden database.
         The hidden database's data is then wiped so that the next series of inputs can have a reset id.
     '''
-    global id
     
     try:
         hiddenDatabase = open("hiddenDatabase.txt")
@@ -147,10 +147,8 @@ def generateCustomerDataFile():
     for line in hiddenDatabase:
         customerInfoFile.write(line)
     
-    # This resets the hidden database for then next set of inputs
-    id = 0
     # File must be set to visible in order to open in write mode
-    subprocess.check_call(["attrib","+V","hiddenDatabase.txt"])
+    subprocess.check_call(["attrib","-H","hiddenDatabase.txt"])
     hiddenDatabase = open("hiddenDatabase.txt", "w")
     # Resets the file to hidden
     subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
@@ -185,12 +183,14 @@ while userInput != exitCondition:
     if userInput == enterCustomerOption:
         # Only the line below may be editted based on the parameter list and how you design the method return
         # Any necessary variables may be added to this if section, but nowhere else in the code
-        enterCustomerInfo()
+        enterCustomerInfo(id)
+        id+=1
 
 
     elif userInput == generateCustomerOption: 
         # Only the line below may be editted based on the parameter list and how you design the method return
         generateCustomerDataFile()
+        id = 0
 
     else:
         print("Please type in a valid option (A number from 1-9)")
