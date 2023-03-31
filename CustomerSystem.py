@@ -119,7 +119,7 @@ def generateCustomerDataFile(usrid):
         The hidden database's data is then wiped so that the next series of inputs can have a reset id.
     '''
     # Will return False if there is no currently stored data    
-    if id == 1:
+    if usrid == 1:
         print("\nYou have not inputted any customer data.")
         return False
     
