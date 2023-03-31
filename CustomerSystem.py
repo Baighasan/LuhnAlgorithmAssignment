@@ -24,7 +24,7 @@ def enterCustomerInfo(usrid):
         Gets the input for the information the user enters, as well as validating
         both the postal code and the credit card. Once everything passes, it will tick the id up one.
         This function will create a hidden database in the folder where it will append the inputted information
-        to. 
+        to.
     '''
     
     # Opens hidden database in append mode
@@ -51,7 +51,7 @@ def enterCustomerInfo(usrid):
     
     # Appends the data to a hidden database to store it for later use when we need to generate the csv file
     usrid += 1
-    hiddenDatabase.writelines(f"{usrid}|{firstName}|{lastName}|{city}|{postalCode}|{creditCard}\n")
+    hiddenDatabase.writelines(f"{usrid},{firstName},{lastName},{city},{postalCode},{creditCard}\n")
     hiddenDatabase.close()
     
     print("\nSuccessfully inputted customer data\n")
@@ -141,7 +141,7 @@ def generateCustomerDataFile():
         print("\nInvalid file path. Try again.")
     
     # Appends the header row
-    customerInfoFile.write("id|First Name|Last Name|City|Postal Code|Credit Card\n")
+    customerInfoFile.write("id,First Name,Last Name,City,Postal Code,Credit Card\n")
     
     hiddenDatabase = open("hiddenDatabase.txt", "r")
     for line in hiddenDatabase:
