@@ -140,8 +140,9 @@ def generateCustomerDataFile(usrid):
     # Checks if inputted filepath is valid
     try: 
         customerInfoFile = open(filePath, "a")
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         print("\nInvalid file path. Try again.")
+        return False
     
     # Once all validation passes, we generate the csv and move all the data from the hidden database to it
     
@@ -161,6 +162,8 @@ def generateCustomerDataFile(usrid):
     subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
     hiddenDatabase.close()
     customerInfoFile.close()
+    
+    return True
 
 ####################################################################
 #       ADDITIONAL METHODS MAY BE ADDED BELOW IF NECESSARY         #
@@ -196,8 +199,8 @@ while userInput != exitCondition:
 
     elif userInput == generateCustomerOption: 
         # Only the line below may be editted based on the parameter list and how you design the method return
-        generateCustomerDataFile(id)
-        id = 1
+        if generateCustomerDataFile(id) == True:
+            id = 1
 
     else:
         print("Please type in a valid option (A number from 1-9)")
