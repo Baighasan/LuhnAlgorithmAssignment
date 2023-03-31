@@ -22,7 +22,7 @@ def printMenu():
 def enterCustomerInfo(usrid):
     '''
         Gets the input for the information the user enters, as well as validating
-        both the postal code and the credit card. Once everything passes, it will tick the id up one.
+        both the postal code and the credit card.
         This function will create a hidden database in the folder where it will append the inputted information
         to.
     '''
@@ -30,7 +30,7 @@ def enterCustomerInfo(usrid):
     # Opens hidden database in append mode
     hiddenDatabase = open("hiddenDatabase.txt", "a")
     
-    # If this is the first input, it will reset the database if there is data and hide it
+    # If this the first input, the created file must be set to hidden
     if usrid == 0:
         subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
     
@@ -50,7 +50,6 @@ def enterCustomerInfo(usrid):
         creditCard = input("\nInvalid credit card. Please re-enter: ")
     
     # Appends the data to a hidden database to store it for later use when we need to generate the csv file
-    usrid += 1
     hiddenDatabase.writelines(f"{usrid},{firstName},{lastName},{city},{postalCode},{creditCard}\n")
     hiddenDatabase.close()
     
@@ -64,8 +63,11 @@ def validatePostalCode(postalCode):
     '''
     with open("postal_codes.csv", "r") as csv_file:
         reader = csv.reader(csv_file, delimiter ="|")
+        # Parses through every row one by one
         for row in reader:
+            # Since row will return a list, we grab the first index to get that line's postal code.
             if postalCode == row[0]:
+                # If the inputted postal code matches, we return True
                 csv_file.close()
                 return True
     csv_file.close()
@@ -76,7 +78,7 @@ def validateCreditCard(creditCard):
     if len(creditCard) < 9:
         print("Invalid credit card")
         return False
-    # Checks if string inputted is all numbers
+    # Checks if the inputted credit card is all numbers
     elif creditCard.isnumeric() == False:
         print("Invalid credit card")
         return False
@@ -93,9 +95,9 @@ def validateCreditCard(creditCard):
             sum1 = sum1 + int(reverseCreditCard[i-1])
         else:
             # If digit is even, then number of the digit will be multiplied by two
-            # If that number is greator then nine, then it takes the sum of the two digits,
-            # then adds them to sum2
             evenDigit = int(reverseCreditCard[i-1]) * 2
+            # If that number is greator then nine, then it takes the sum of the two digits,
+            # then added to sum2
             if evenDigit > 9:
                 evenDigit = str(evenDigit)
                 for x in evenDigit:
@@ -103,52 +105,57 @@ def validateCreditCard(creditCard):
                     sum2 = sum2 + x
             else:
                 sum2 = sum2 + evenDigit
-    # Total sum is sum1 and sum2 added together
+    # sum1 and sum2 are added together
     sumTotal = sum1 + sum2
     sumTotal = str(sumTotal)
-    # If the total sum is a multiple of 10, then return True. If not, return False
+    # If the total sum is a multiple of 10, then the credit card is valid.
     if sumTotal[-1] == "0":
         return True
     return False
 
-def generateCustomerDataFile():
+def generateCustomerDataFile(usrid):
     '''
         Generates the customer data file and appends the inputted data that was stored in the hidden database.
         The hidden database's data is then wiped so that the next series of inputs can have a reset id.
     '''
-    
-    try:
-        hiddenDatabase = open("hiddenDatabase.txt")
-    except IOError:
+    # Will return False if there is no currently stored data    
+    if id == 1:
         print("\nYou have not inputted any customer data.")
-        hiddenDatabase.close()
         return False
-    hiddenDatabase.close()
     
-    ####### FIX ERROR WHERE USER ENTERS BLANK NAME
+    # Takes in desired filename and filepath
     fileName = input("\nInput a name for your generated csv file. Try not to put any spaces. Do not end your file with .csv: ")
+    # If filename is a blank string, ms excel will not be able to find the file. We validate for this
+    while fileName == "":
+        fileName = input("Filename cannot be blank. Please re-enter: ")
     filePath = input("\nInput the file path where you want the csv file to be generated. \nIf you are on a windows, seperate your path with \\. If you are on a mac, seperate your path with /. \nMake sure to end your file path with your correct slash. \nLeave blank to generate in current folder: ")
     
+    # QOL: If the user leaves filepath input blank, we automatically set the filepath to the current directory
     if filePath == "":
         filePath = os.getcwd() + "\\" + fileName + ".csv"
     
     else:
         filePath = filePath + fileName + ".csv"
     
+    # Checks if inputted filepath is valid
     try: 
         customerInfoFile = open(filePath, "a")
-    except FileNotFoundError: 
+    except FileNotFoundError:
         print("\nInvalid file path. Try again.")
+    
+    # Once all validation passes, we generate the csv and move all the data from the hidden database to it
     
     # Appends the header row
     customerInfoFile.write("id,First Name,Last Name,City,Postal Code,Credit Card\n")
     
+    # Appends all the data from the hidden database row by row
     hiddenDatabase = open("hiddenDatabase.txt", "r")
     for line in hiddenDatabase:
         customerInfoFile.write(line)
     
     # File must be set to visible in order to open in write mode
     subprocess.check_call(["attrib","-H","hiddenDatabase.txt"])
+    # Opens the hidden database in write mode to wipe all data for next set of entries
     hiddenDatabase = open("hiddenDatabase.txt", "w")
     # Resets the file to hidden
     subprocess.check_call(["attrib","+H","hiddenDatabase.txt"])
@@ -174,7 +181,7 @@ generateCustomerOption = "2"
 exitCondition = "9"
 
 # More variables for the main may be declared in the space below
-id = 0
+id = 1
 
 while userInput != exitCondition:
     printMenu()                 # Printing out the main menu
@@ -189,8 +196,8 @@ while userInput != exitCondition:
 
     elif userInput == generateCustomerOption: 
         # Only the line below may be editted based on the parameter list and how you design the method return
-        generateCustomerDataFile()
-        id = 0
+        generateCustomerDataFile(id)
+        id = 1
 
     else:
         print("Please type in a valid option (A number from 1-9)")
